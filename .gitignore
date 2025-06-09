@@ -1,0 +1,32 @@
+# Build Folders (you can keep them if you want)
+bin/
+obj/
+
+# Visual Studio files
+*.suo
+*.user
+*.userprefs
+*.sln.docstates
+
+# Rider files
+.idea/
+*.sln.iml
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# VS Code settings
+.vscode/
+
+# ASP.NET Core
+**/Properties/launchSettings.json
+
+# Secrets
+**/secrets.json
+
+# Publish folder
+publish/
