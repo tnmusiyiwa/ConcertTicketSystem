@@ -1,0 +1,56 @@
+### Test Error Handling Examples
+
+### 1. Create Event with Validation Errors
+POST https://localhost:5001/api/events
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": "This is a test event description that is way too long and exceeds the maximum allowed length of 1000 characters. This is just to test the validation logic that should return a meaningful error message to the user instead of a generic internal server error. Let me make this even longer to ensure it definitely exceeds the limit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nescitur.",
+  "venue": "",
+  "eventDate": "2023-01-01T00:00:00Z",
+  "totalCapacity": -5
+}
+
+### 2. Try to Get Non-Existent Event
+GET https://localhost:5001/api/events/12345678-1234-1234-1234-123456789abc
+
+### 3. Reserve Ticket with Invalid Email
+POST https://localhost:5001/api/tickets/reserve
+Content-Type: application/json
+
+{
+  "ticketTypeId": "12345678-1234-1234-1234-123456789abc",
+  "customerEmail": "invalid-email",
+  "customerName": "A"
+}
+
+### 4. Try to Purchase Non-Existent Ticket
+POST https://localhost:5001/api/tickets/purchase
+Content-Type: application/json
+
+{
+  "ticketId": "12345678-1234-1234-1234-123456789abc",
+  "paymentTransactionId": "tx_test_123"
+}
+
+### 5. Create Ticket Type for Non-Existent Event
+POST https://localhost:5001/api/tickettypes
+Content-Type: application/json
+
+{
+  "eventId": "12345678-1234-1234-1234-123456789abc",
+  "name": "",
+  "description": "",
+  "price": -10,
+  "totalQuantity": 0
+}
+
+### 6. Try to Delete Event (Should work - get real event ID first)
+DELETE https://localhost:5001/api/events/REPLACE_WITH_REAL_EVENT_ID
+
+### 7. Try to Cancel Non-Existent Ticket
+POST https://localhost:5001/api/tickets/12345678-1234-1234-1234-123456789abc/cancel
+
+### 8. Get Availability for Non-Existent Ticket Type
+GET https://localhost:5001/api/tickets/availability/12345678-1234-1234-1234-123456789abc

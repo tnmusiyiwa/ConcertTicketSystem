@@ -1,3 +1,4 @@
+using ConcertTicketSystem.API.Middleware;
 using ConcertTicketSystem.Infrastructure.Data;
 using ConcertTicketSystem.Infrastructure.Extensions;
 using Microsoft.OpenApi.Models;
@@ -66,6 +67,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();

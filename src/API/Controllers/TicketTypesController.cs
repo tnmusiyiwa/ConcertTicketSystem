@@ -24,16 +24,8 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TicketTypeDto>>> GetAllTicketTypes()
         {
-            try
-            {
-                var ticketTypes = await _ticketTypeService.GetAllTicketTypesAsync();
-                return Ok(ticketTypes);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all ticket types");
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            var ticketTypes = await _ticketTypeService.GetAllTicketTypesAsync();
+            return Ok(ticketTypes);
         }
 
         /// <summary>
@@ -44,20 +36,12 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TicketTypeDto>> GetTicketType(Guid id)
         {
-            try
+            var ticketType = await _ticketTypeService.GetTicketTypeByIdAsync(id);
+            if (ticketType == null)
             {
-                var ticketType = await _ticketTypeService.GetTicketTypeByIdAsync(id);
-                if (ticketType == null)
-                {
-                    return NotFound($"Ticket type with ID {id} not found");
-                }
-                return Ok(ticketType);
+                return NotFound($"Ticket type with ID {id} not found");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting ticket type with ID: {TicketTypeId}", id);
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            return Ok(ticketType);
         }
 
         /// <summary>
@@ -68,16 +52,8 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpGet("event/{eventId}")]
         public async Task<ActionResult<IEnumerable<TicketTypeDto>>> GetTicketTypesByEvent(Guid eventId)
         {
-            try
-            {
-                var ticketTypes = await _ticketTypeService.GetTicketTypesByEventIdAsync(eventId);
-                return Ok(ticketTypes);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting ticket types for event ID: {EventId}", eventId);
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            var ticketTypes = await _ticketTypeService.GetTicketTypesByEventIdAsync(eventId);
+            return Ok(ticketTypes);
         }
 
         /// <summary>
@@ -88,25 +64,13 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpPost]
         public async Task<ActionResult<TicketTypeDto>> CreateTicketType([FromBody] CreateTicketTypeDto createTicketTypeDto)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+                return BadRequest(ModelState);
+            }
 
-                var createdTicketType = await _ticketTypeService.CreateTicketTypeAsync(createTicketTypeDto);
-                return CreatedAtAction(nameof(GetTicketType), new { id = createdTicketType.Id }, createdTicketType);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating ticket type");
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            var createdTicketType = await _ticketTypeService.CreateTicketTypeAsync(createTicketTypeDto);
+            return CreatedAtAction(nameof(GetTicketType), new { id = createdTicketType.Id }, createdTicketType);
         }
 
         /// <summary>
@@ -118,25 +82,13 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<TicketTypeDto>> UpdateTicketType(Guid id, [FromBody] UpdateTicketTypeDto updateTicketTypeDto)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+                return BadRequest(ModelState);
+            }
 
-                var updatedTicketType = await _ticketTypeService.UpdateTicketTypeAsync(id, updateTicketTypeDto);
-                return Ok(updatedTicketType);
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while updating ticket type with ID: {TicketTypeId}", id);
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            var updatedTicketType = await _ticketTypeService.UpdateTicketTypeAsync(id, updateTicketTypeDto);
+            return Ok(updatedTicketType);
         }
 
         /// <summary>
@@ -147,20 +99,8 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTicketType(Guid id)
         {
-            try
-            {
-                await _ticketTypeService.DeleteTicketTypeAsync(id);
-                return NoContent();
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while deleting ticket type with ID: {TicketTypeId}", id);
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            await _ticketTypeService.DeleteTicketTypeAsync(id);
+            return NoContent();
         }
     }
 }

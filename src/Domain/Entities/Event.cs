@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using ConcertTicketSystem.Domain.Common;
 
 namespace ConcertTicketSystem.Domain.Entities
 {
-    public class Event
+    public class Event: BaseEntity
     {
-        public Guid Id { get; set; }
-        
         [Required]
         [StringLength(200)]
         public string Name { get; set; } = string.Empty;
@@ -24,10 +23,6 @@ namespace ConcertTicketSystem.Domain.Entities
         public int AvailableCapacity { get; set; }
         
         public bool IsActive { get; set; } = true;
-        
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         
         public virtual ICollection<TicketType> TicketTypes { get; set; } = new List<TicketType>();
         public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();

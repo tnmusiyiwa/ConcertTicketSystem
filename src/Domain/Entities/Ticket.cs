@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using ConcertTicketSystem.Domain.Common;
 using ConcertTicketSystem.Domain.Enums;
 
 namespace ConcertTicketSystem.Domain.Entities
 {
-    public class Ticket
+    public class Ticket: BaseEntity
     {
-        public Guid Id { get; set; }
-        
+
         public Guid EventId { get; set; }
         
         public Guid TicketTypeId { get; set; }
@@ -33,10 +33,6 @@ namespace ConcertTicketSystem.Domain.Entities
         
         [StringLength(200)]
         public string? PaymentTransactionId { get; set; }
-        
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         
         public virtual Event Event { get; set; } = null!;
         public virtual TicketType TicketType { get; set; } = null!;

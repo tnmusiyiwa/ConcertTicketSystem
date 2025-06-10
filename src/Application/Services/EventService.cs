@@ -52,6 +52,8 @@ namespace ConcertTicketSystem.Application.Services
         {
             try
             {
+                createEventDto.EventDate = createEventDto.EventDate.ToUniversalTime();
+                
                 var eventEntity = _mapper.Map<Event>(createEventDto);
                 eventEntity.Id = Guid.NewGuid();
                 eventEntity.AvailableCapacity = eventEntity.TotalCapacity;

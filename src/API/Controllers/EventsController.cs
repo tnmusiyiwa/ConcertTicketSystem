@@ -24,16 +24,8 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetAllEvents()
         {
-            try
-            {
-                var events = await _eventService.GetAllEventsAsync();
-                return Ok(events);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all events");
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            var events = await _eventService.GetAllEventsAsync();
+            return Ok(events);
         }
 
         /// <summary>
@@ -44,20 +36,12 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<EventDto>> GetEvent(Guid id)
         {
-            try
+            var eventDto = await _eventService.GetEventByIdAsync(id);
+            if (eventDto == null)
             {
-                var eventDto = await _eventService.GetEventByIdAsync(id);
-                if (eventDto == null)
-                {
-                    return NotFound($"Event with ID {id} not found");
-                }
-                return Ok(eventDto);
+                return NotFound($"Event with ID {id} not found");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting event with ID: {EventId}", id);
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            return Ok(eventDto);
         }
 
         /// <summary>
@@ -68,21 +52,13 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpPost]
         public async Task<ActionResult<EventDto>> CreateEvent([FromBody] CreateEventDto createEventDto)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+                return BadRequest(ModelState);
+            }
 
-                var createdEvent = await _eventService.CreateEventAsync(createEventDto);
-                return CreatedAtAction(nameof(GetEvent), new { id = createdEvent.Id }, createdEvent);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating event");
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            var createdEvent = await _eventService.CreateEventAsync(createEventDto);
+            return CreatedAtAction(nameof(GetEvent), new { id = createdEvent.Id }, createdEvent);
         }
 
         /// <summary>
@@ -94,25 +70,13 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<EventDto>> UpdateEvent(Guid id, [FromBody] UpdateEventDto updateEventDto)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+                return BadRequest(ModelState);
+            }
 
-                var updatedEvent = await _eventService.UpdateEventAsync(id, updateEventDto);
-                return Ok(updatedEvent);
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while updating event with ID: {EventId}", id);
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            var updatedEvent = await _eventService.UpdateEventAsync(id, updateEventDto);
+            return Ok(updatedEvent);
         }
 
         /// <summary>
@@ -123,20 +87,8 @@ namespace ConcertTicketSystem.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
-            try
-            {
-                await _eventService.DeleteEventAsync(id);
-                return NoContent();
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while deleting event with ID: {EventId}", id);
-                return StatusCode(500, "An error occurred while processing your request");
-            }
+            await _eventService.DeleteEventAsync(id);
+            return NoContent();
         }
     }
 }
