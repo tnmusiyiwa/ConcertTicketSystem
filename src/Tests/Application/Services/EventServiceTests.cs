@@ -39,26 +39,31 @@ namespace ConcertTicketSystem.Tests.Application.Services
             };
             var eventEntity = new Event
             {
-                Id = Guid.NewGuid(),
                 Name = createDto.Name,
                 EventDate = createDto.EventDate,
                 TotalCapacity = createDto.TotalCapacity,
                 AvailableCapacity = createDto.TotalCapacity
             };
-            var createdEvent = eventEntity;
-            var eventDto = new EventDto { Id = eventEntity.Id, Name = eventEntity.Name };
+            Event? capturedEntity = null;
+            var eventDto = new EventDto();
 
             _mapperMock.Setup(m => m.Map<Event>(createDto)).Returns(eventEntity);
-            _unitOfWorkMock.Setup(u => u.Events.CreateAsync(It.IsAny<Event>())).ReturnsAsync(createdEvent);
+            _unitOfWorkMock.Setup(u => u.Events.CreateAsync(It.IsAny<Event>()))
+                .Callback<Event>(e =>
+                {
+                    capturedEntity = e;
+                    eventDto.Id = e.Id; // Set the DTO's Id to match the generated one
+                })
+                .ReturnsAsync(() => capturedEntity!);
             _unitOfWorkMock.Setup(u => u.SaveChangesAsync()).Returns(Task.FromResult(1));
-            _mapperMock.Setup(m => m.Map<EventDto>(createdEvent)).Returns(eventDto);
+            _mapperMock.Setup(m => m.Map<EventDto>(It.IsAny<Event>())).Returns(() => eventDto);
 
             // Act
             var result = await _eventService.CreateEventAsync(createDto);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(eventEntity.Id, result.Id);
+            Assert.Equal(capturedEntity.Id, result.Id);
             _unitOfWorkMock.Verify(u => u.Events.CreateAsync(It.IsAny<Event>()), Times.Once);
             _unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
         }
@@ -78,7 +83,12 @@ namespace ConcertTicketSystem.Tests.Application.Services
             // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => _eventService.CreateEventAsync(createDto));
             _loggerMock.Verify(
-                l => l.LogError(It.IsAny<Exception>(), "Error occurred while creating event"),
+                l => l.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Error occurred while creating event")),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
                 Times.Once);
         }
 

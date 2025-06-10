@@ -97,26 +97,31 @@ namespace ConcertTicketSystem.Tests.Application.Services
             };
             var ticketType = new TicketType
             {
-                Id = Guid.NewGuid(),
                 EventId = createDto.EventId,
                 Name = createDto.Name,
                 TotalQuantity = createDto.TotalQuantity,
                 Price = createDto.Price,
                 AvailableQuantity = createDto.TotalQuantity
             };
-            var createdTicketType = ticketType;
-            var ticketTypeDto = new TicketTypeDto { Id = ticketType.Id };
+            TicketType? capturedEntity = null;
+            var ticketTypeDto = new TicketTypeDto();
 
             _unitOfWorkMock.Setup(u => u.Events.ExistsAsync(createDto.EventId)).ReturnsAsync(true);
             _mapperMock.Setup(m => m.Map<TicketType>(createDto)).Returns(ticketType);
-            _unitOfWorkMock.Setup(u => u.TicketTypes.CreateAsync(It.IsAny<TicketType>())).ReturnsAsync(createdTicketType);
+            _unitOfWorkMock.Setup(u => u.TicketTypes.CreateAsync(It.IsAny<TicketType>()))
+                .Callback<TicketType>(tt =>
+                {
+                    capturedEntity = tt;
+                    ticketTypeDto.Id = tt.Id;
+                })
+                .ReturnsAsync(() => capturedEntity!);
             _unitOfWorkMock.Setup(u => u.SaveChangesAsync()).Returns(Task.FromResult(0));
-            _mapperMock.Setup(m => m.Map<TicketTypeDto>(createdTicketType)).Returns(ticketTypeDto);
+            _mapperMock.Setup(m => m.Map<TicketTypeDto>(It.IsAny<TicketType>())).Returns(() => ticketTypeDto);
 
             var result = await _service.CreateTicketTypeAsync(createDto);
 
             Assert.NotNull(result);
-            Assert.Equal(ticketType.Id, result.Id);
+            Assert.Equal(capturedEntity.Id, result.Id);
         }
 
         [Fact]

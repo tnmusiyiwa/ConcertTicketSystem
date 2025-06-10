@@ -26,11 +26,15 @@ namespace ConcertTicketSystem.Tests.Infrastructure.Repositories
             var dbName = Guid.NewGuid().ToString();
             using var context = GetDbContext(dbName);
             var eventId = Guid.NewGuid();
+
+            // Add the related Event entity
+            context.Events.Add(new Event { Id = eventId, Name = "Event" });
+
             var ticketTypes = new List<TicketType>
-            {
-                new TicketType { Id = Guid.NewGuid(), EventId = eventId, Price = 200 },
-                new TicketType { Id = Guid.NewGuid(), EventId = eventId, Price = 100 }
-            };
+    {
+        new TicketType { Id = Guid.NewGuid(), EventId = eventId, Price = 200 },
+        new TicketType { Id = Guid.NewGuid(), EventId = eventId, Price = 100 }
+    };
             context.TicketTypes.AddRange(ticketTypes);
             context.SaveChanges();
 
@@ -70,11 +74,15 @@ namespace ConcertTicketSystem.Tests.Infrastructure.Repositories
             var dbName = Guid.NewGuid().ToString();
             using var context = GetDbContext(dbName);
             var eventId = Guid.NewGuid();
+
+            // Add the related Event entity
+            context.Events.Add(new Event { Id = eventId, Name = "Event" });
+
             var ticketTypes = new List<TicketType>
-            {
-                new TicketType { Id = Guid.NewGuid(), EventId = eventId, Price = 300 },
-                new TicketType { Id = Guid.NewGuid(), EventId = eventId, Price = 100 }
-            };
+    {
+        new TicketType { Id = Guid.NewGuid(), EventId = eventId, Price = 300 },
+        new TicketType { Id = Guid.NewGuid(), EventId = eventId, Price = 100 }
+    };
             context.TicketTypes.AddRange(ticketTypes);
             context.SaveChanges();
 

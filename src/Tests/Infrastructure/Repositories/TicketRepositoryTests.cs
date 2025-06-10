@@ -26,11 +26,18 @@ namespace ConcertTicketSystem.Tests.Infrastructure.Repositories
         {
             var dbName = Guid.NewGuid().ToString();
             using var context = GetDbContext(dbName);
+
+            // Add required related entities
+            var eventId = Guid.NewGuid();
+            var ticketTypeId = Guid.NewGuid();
+            context.Events.Add(new Event { Id = eventId, Name = "Event" });
+            context.TicketTypes.Add(new TicketType { Id = ticketTypeId, Name = "Type", EventId = eventId });
+
             var tickets = new List<Ticket>
-            {
-                new Ticket { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow.AddMinutes(-1) },
-                new Ticket { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow }
-            };
+    {
+        new Ticket { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow.AddMinutes(-1), EventId = eventId, TicketTypeId = ticketTypeId },
+        new Ticket { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, EventId = eventId, TicketTypeId = ticketTypeId }
+    };
             context.Tickets.AddRange(tickets);
             context.SaveChanges();
 
@@ -77,7 +84,19 @@ namespace ConcertTicketSystem.Tests.Infrastructure.Repositories
             var dbName = Guid.NewGuid().ToString();
             using var context = GetDbContext(dbName);
             var eventId = Guid.NewGuid();
-            var ticket = new Ticket { Id = Guid.NewGuid(), EventId = eventId, CreatedAt = DateTime.UtcNow };
+            var ticketTypeId = Guid.NewGuid();
+
+            // Add the related Event and TicketType entities
+            context.Events.Add(new Event { Id = eventId, Name = "Event" });
+            context.TicketTypes.Add(new TicketType { Id = ticketTypeId, Name = "Type", EventId = eventId });
+
+            var ticket = new Ticket
+            {
+                Id = Guid.NewGuid(),
+                EventId = eventId,
+                TicketTypeId = ticketTypeId,
+                CreatedAt = DateTime.UtcNow
+            };
             context.Tickets.Add(ticket);
             context.SaveChanges();
 
@@ -95,7 +114,21 @@ namespace ConcertTicketSystem.Tests.Infrastructure.Repositories
             var dbName = Guid.NewGuid().ToString();
             using var context = GetDbContext(dbName);
             var email = "test@example.com";
-            var ticket = new Ticket { Id = Guid.NewGuid(), CustomerEmail = email, CreatedAt = DateTime.UtcNow };
+            var eventId = Guid.NewGuid();
+            var ticketTypeId = Guid.NewGuid();
+
+            // Add required related entities
+            context.Events.Add(new Event { Id = eventId, Name = "Event" });
+            context.TicketTypes.Add(new TicketType { Id = ticketTypeId, Name = "Type", EventId = eventId });
+
+            var ticket = new Ticket
+            {
+                Id = Guid.NewGuid(),
+                CustomerEmail = email,
+                EventId = eventId,
+                TicketTypeId = ticketTypeId,
+                CreatedAt = DateTime.UtcNow
+            };
             context.Tickets.Add(ticket);
             context.SaveChanges();
 
